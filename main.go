@@ -17,4 +17,5 @@ func main() {
 	for _, expr := range expressions {
 		fmt.Println(expr, "=", expr.Eval())
 	}
+
 }
