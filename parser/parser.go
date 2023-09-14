@@ -89,6 +89,9 @@ func (parser *Parser) primary() ast.Expression {
 		expr := ast.NewNumberExpression(number)
 		return expr
 	}
+	if parser.match(TOKENTYPE_WORD) {
+		return ast.NewConstantExpression(string(currentTok.Text()))
+	}
 	if parser.match(TOKENTYPE_HEX_NUMBER) {
 		// No handle error?
 		number, err := strconv.ParseUint(string(currentTok.Text()), 16, 32)
