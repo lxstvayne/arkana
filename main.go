@@ -1,12 +1,12 @@
 package main
 
 import (
+	"arkana/parser"
 	"fmt"
-	"main/parser"
 )
 
 func main() {
-	exampleString := "(#2 + -#2) * #FaBCDEF"
+	exampleString := "(PI + 2) * #f"
 	lexer := parser.NewLexer(exampleString)
 	tokens := lexer.Tokenize()
 	for _, tok := range tokens {

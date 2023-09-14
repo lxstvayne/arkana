@@ -1,6 +1,7 @@
 package parser
 
 import (
+	"arkana/parser/ast"
 	"strconv"
 )
 
@@ -18,7 +19,7 @@ func NewParser(tokens []*Token) *Parser {
 }
 
 // Метод рекурсивного спуска
-func (parser *Parser) Parse() (result []Expression) {
+func (parser *Parser) Parse() (result []ast.Expression) {
 	for {
 		if parser.match(TOKENTYPE_EOF) {
 			return
@@ -28,20 +29,20 @@ func (parser *Parser) Parse() (result []Expression) {
 	}
 }
 
-func (parser *Parser) expression() Expression {
+func (parser *Parser) expression() ast.Expression {
 	return parser.additive()
 }
 
-func (parser *Parser) additive() Expression {
+func (parser *Parser) additive() ast.Expression {
 	result := parser.multiplicative()
 
 	for {
 		if parser.match(TOKENTYPE_PLUS) {
-			result = NewBinaryExpression(rune('+'), result, parser.multiplicative())
+			result = ast.NewBinaryExpression(rune('+'), result, parser.multiplicative())
 			continue
 		}
 		if parser.match(TOKENTYPE_MINUS) {
-			result = NewBinaryExpression(rune('-'), result, parser.multiplicative())
+			result = ast.NewBinaryExpression(rune('-'), result, parser.multiplicative())
 			continue
 		}
 		break
@@ -50,16 +51,16 @@ func (parser *Parser) additive() Expression {
 	return result
 }
 
-func (parser *Parser) multiplicative() Expression {
+func (parser *Parser) multiplicative() ast.Expression {
 	result := parser.unary()
 
 	for {
 		if parser.match(TOKENTYPE_STAR) {
-			result = NewBinaryExpression(rune('*'), result, parser.unary())
+			result = ast.NewBinaryExpression(rune('*'), result, parser.unary())
 			continue
 		}
 		if parser.match(TOKENTYPE_SLASH) {
-			result = NewBinaryExpression(rune('/'), result, parser.unary())
+			result = ast.NewBinaryExpression(rune('/'), result, parser.unary())
 			continue
 		}
 		break
@@ -68,16 +69,16 @@ func (parser *Parser) multiplicative() Expression {
 	return result
 }
 
-func (parser *Parser) unary() Expression {
+func (parser *Parser) unary() ast.Expression {
 	if parser.match(TOKENTYPE_MINUS) {
-		return NewUnaryExpression(rune('-'), parser.primary())
+		return ast.NewUnaryExpression(rune('-'), parser.primary())
 	} else if parser.match(TOKENTYPE_PLUS) {
 		return parser.primary()
 	}
 	return parser.primary()
 }
 
-func (parser *Parser) primary() Expression {
+func (parser *Parser) primary() ast.Expression {
 	currentTok := parser.get(0)
 	if parser.match(TOKENTYPE_NUMBER) {
 		// No handle error?
@@ -85,8 +86,8 @@ func (parser *Parser) primary() Expression {
 		if err != nil {
 			panic(err)
 		}
-		expr := NumberExpression(number)
-		return &expr
+		expr := ast.NewNumberExpression(number)
+		return expr
 	}
 	if parser.match(TOKENTYPE_HEX_NUMBER) {
 		// No handle error?
@@ -94,9 +95,8 @@ func (parser *Parser) primary() Expression {
 		if err != nil {
 			panic(err)
 		}
-		f := float32(number)
-		expr := NumberExpression(f)
-		return &expr
+		expr := ast.NewNumberExpression(float64(number))
+		return expr
 	}
 	if parser.match(TOKENTYPE_LPAR) {
 		result := parser.expression()

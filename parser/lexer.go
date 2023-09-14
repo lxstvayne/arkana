@@ -3,6 +3,8 @@ package parser
 import (
 	"strings"
 	"unicode"
+
+	"golang.org/x/exp/slices"
 )
 
 const (
@@ -10,7 +12,7 @@ const (
 )
 
 var (
-	OPERATOR_TOKENS = []TokenType{
+	OPERATOR_TOKENS = [...]TokenType{
 		TOKENTYPE_PLUS, TOKENTYPE_MINUS, TOKENTYPE_STAR, TOKENTYPE_SLASH,
 		TOKENTYPE_LPAR, TOKENTYPE_RPAR,
 	}
@@ -41,6 +43,8 @@ func (lexer *Lexer) Tokenize() []*Token {
 
 		if unicode.IsDigit(current) {
 			lexer.tokenizeNumber()
+		} else if unicode.IsLetter(current) {
+			lexer.tokenizeWord()
 		} else if current == rune('#') {
 			lexer.next()
 			lexer.tokenizeHexNumber()
@@ -75,7 +79,11 @@ func (lexer *Lexer) tokenizeNumber() {
 	var buf []rune
 	current := lexer.peek(0)
 	for {
-		if !unicode.IsDigit(current) {
+		if current == rune('.') {
+			if slices.Contains(buf, rune('.')) {
+				panic("Invalid float number")
+			}
+		} else if !unicode.IsDigit(current) {
 			break
 		}
 
@@ -83,6 +91,20 @@ func (lexer *Lexer) tokenizeNumber() {
 		current = lexer.next()
 	}
 	lexer.addToken(TOKENTYPE_NUMBER, buf)
+}
+
+func (lexer *Lexer) tokenizeWord() {
+	var buf []rune
+	current := lexer.peek(0)
+	for {
+		if !(unicode.IsLetter(current) || unicode.IsDigit(current) || current == rune('_')) {
+			break
+		}
+
+		buf = append(buf, current)
+		current = lexer.next()
+	}
+	lexer.addToken(TOKENTYPE_WORD, buf)
 }
 
 func (lexer *Lexer) tokenizeHexNumber() {

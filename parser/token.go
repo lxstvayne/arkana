@@ -7,6 +7,7 @@ type TokenType int
 const (
 	TOKENTYPE_NUMBER TokenType = iota
 	TOKENTYPE_HEX_NUMBER
+	TOKENTYPE_WORD
 
 	TOKENTYPE_PLUS
 	TOKENTYPE_MINUS
@@ -25,6 +26,8 @@ func (tokenType TokenType) String() string {
 		return "NUMBER"
 	case TOKENTYPE_HEX_NUMBER:
 		return "HEX_NUMBER"
+	case TOKENTYPE_WORD:
+		return "WORD"
 	case TOKENTYPE_PLUS:
 		return "PLUS"
 	case TOKENTYPE_MINUS:
@@ -33,6 +36,10 @@ func (tokenType TokenType) String() string {
 		return "STAR"
 	case TOKENTYPE_SLASH:
 		return "SLASH"
+	case TOKENTYPE_LPAR:
+		return "LPAREN"
+	case TOKENTYPE_RPAR:
+		return "RPAREN"
 	case TOKENTYPE_EOF:
 		return "EOF"
 	default:
