@@ -1,7 +1,7 @@
 package ast
 
 import (
-	"arkana/lib/constants"
+	"arkana/lib/variables"
 )
 
 type ConstantExpression struct {
@@ -15,7 +15,7 @@ func NewConstantExpression(name string) *ConstantExpression {
 }
 
 func (expr *ConstantExpression) Eval() float64 {
-	return constants.Get(expr.name)
+	return variables.Get(expr.name)
 }
 
 func (expr *ConstantExpression) String() string {

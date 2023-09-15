@@ -1,4 +1,4 @@
-package constants
+package variables
 
 import (
 	"fmt"
@@ -6,14 +6,14 @@ import (
 )
 
 var (
-	constants = map[string]float64{
+	variables = map[string]float64{
 		"PI": math.Pi,
 		"E":  math.E,
 	}
 )
 
 func IsExists(key string) bool {
-	_, ok := constants[key]
+	_, ok := variables[key]
 	return ok
 }
 
@@ -22,5 +22,9 @@ func Get(key string) float64 {
 		panic(fmt.Sprintf("Const '%s' doesnt exists", key))
 	}
 
-	return constants[key]
+	return variables[key]
+}
+
+func Set(key string, value float64) {
+	variables[key] = value
 }

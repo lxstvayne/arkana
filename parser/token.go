@@ -13,6 +13,7 @@ const (
 	TOKENTYPE_MINUS
 	TOKENTYPE_STAR
 	TOKENTYPE_SLASH
+	TOKENTYPE_EQ
 
 	TOKENTYPE_LPAR // (
 	TOKENTYPE_RPAR // )
@@ -36,6 +37,8 @@ func (tokenType TokenType) String() string {
 		return "STAR"
 	case TOKENTYPE_SLASH:
 		return "SLASH"
+	case TOKENTYPE_EQ:
+		return "EQ"
 	case TOKENTYPE_LPAR:
 		return "LPAREN"
 	case TOKENTYPE_RPAR:

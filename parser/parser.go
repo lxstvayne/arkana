@@ -2,6 +2,7 @@ package parser
 
 import (
 	"arkana/parser/ast"
+	"fmt"
 	"strconv"
 )
 
@@ -19,14 +20,30 @@ func NewParser(tokens []*Token) *Parser {
 }
 
 // Метод рекурсивного спуска
-func (parser *Parser) Parse() (result []ast.Expression) {
+func (parser *Parser) Parse() (result []ast.Statement) {
 	for {
 		if parser.match(TOKENTYPE_EOF) {
 			return
 		}
 
-		result = append(result, parser.expression())
+		result = append(result, parser.statement())
 	}
+}
+
+func (parser *Parser) statement() ast.Statement {
+	return parser.assignmentStatement()
+}
+
+func (parser *Parser) assignmentStatement() ast.Statement {
+	// WORD EQ
+	current := parser.get(0)
+	if parser.match(TOKENTYPE_WORD) && parser.get(0).TokenType() == TOKENTYPE_EQ {
+		variable := current.Text()
+		parser.consume(TOKENTYPE_EQ)
+		return ast.NewAssignmentStatement(variable, parser.expression())
+	}
+
+	panic("Unknown statement")
 }
 
 func (parser *Parser) expression() ast.Expression {
@@ -107,6 +124,15 @@ func (parser *Parser) primary() ast.Expression {
 		return result
 	}
 	panic("Unknown Expression")
+}
+
+func (parser *Parser) consume(tokenType TokenType) *Token {
+	currentTok := parser.get(0)
+	if tokenType != currentTok.TokenType() {
+		panic(fmt.Sprintf("Token %s doesnt match %s", string(currentTok.Text()), tokenType))
+	}
+	parser.position += 1
+	return currentTok
 }
 
 func (parser *Parser) match(tokenType TokenType) bool {
