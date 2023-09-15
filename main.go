@@ -1,13 +1,19 @@
 package main
 
 import (
-	"arkana/lib/variables"
 	"arkana/parser"
 	"fmt"
+	"os"
 )
 
 func main() {
-	exampleString := "word = 2 + 2\nword2 = PI + word"
+	data, err := os.ReadFile("./program.txt")
+
+	if err != nil {
+		panic(err)
+	}
+
+	exampleString := string(data)
 	lexer := parser.NewLexer(exampleString)
 	tokens := lexer.Tokenize()
 	for _, tok := range tokens {
@@ -21,6 +27,4 @@ func main() {
 	for _, st := range statements {
 		st.Execute()
 	}
-	fmt.Printf("%s = %f\n", "word", variables.Get("word"))
-	fmt.Printf("%s = %f", "word2", variables.Get("word2"))
 }

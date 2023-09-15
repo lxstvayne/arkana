@@ -1,6 +1,9 @@
 package ast
 
-import "fmt"
+import (
+	"arkana/lib"
+	"fmt"
+)
 
 type UnaryExpression struct {
 	operation rune
@@ -14,10 +17,10 @@ func NewUnaryExpression(operation rune, expr Expression) *UnaryExpression {
 	}
 }
 
-func (expr *UnaryExpression) Eval() float64 {
+func (expr *UnaryExpression) Eval() lib.Value {
 	switch expr.operation {
 	case rune('-'):
-		return -expr.expr.Eval()
+		return lib.NewNumberValue(-expr.expr.Eval().Float64())
 	case rune('+'):
 		return expr.expr.Eval()
 	default:

@@ -1,8 +1,11 @@
 package ast
 
-import "fmt"
+import (
+	"arkana/lib"
+	"fmt"
+)
 
 type Expression interface {
-	Eval() float64
+	Eval() lib.Value
 	fmt.Stringer
 }

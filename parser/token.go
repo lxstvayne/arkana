@@ -8,6 +8,10 @@ const (
 	TOKENTYPE_NUMBER TokenType = iota
 	TOKENTYPE_HEX_NUMBER
 	TOKENTYPE_WORD
+	TOKENTYPE_TEXT
+
+	// kw
+	TOKENTYPE_PRINT
 
 	TOKENTYPE_PLUS
 	TOKENTYPE_MINUS
@@ -29,6 +33,10 @@ func (tokenType TokenType) String() string {
 		return "HEX_NUMBER"
 	case TOKENTYPE_WORD:
 		return "WORD"
+	case TOKENTYPE_TEXT:
+		return "TEXT"
+	case TOKENTYPE_PRINT:
+		return "PRINT"
 	case TOKENTYPE_PLUS:
 		return "PLUS"
 	case TOKENTYPE_MINUS:

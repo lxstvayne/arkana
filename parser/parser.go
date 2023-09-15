@@ -31,6 +31,9 @@ func (parser *Parser) Parse() (result []ast.Statement) {
 }
 
 func (parser *Parser) statement() ast.Statement {
+	if parser.match(TOKENTYPE_PRINT) {
+		return ast.NewPrintStatement(parser.expression())
+	}
 	return parser.assignmentStatement()
 }
 
@@ -103,11 +106,14 @@ func (parser *Parser) primary() ast.Expression {
 		if err != nil {
 			panic(err)
 		}
-		expr := ast.NewNumberExpression(number)
+		expr := ast.NewValueExpression(number)
 		return expr
 	}
 	if parser.match(TOKENTYPE_WORD) {
-		return ast.NewConstantExpression(string(currentTok.Text()))
+		return ast.NewVariableExpression(string(currentTok.Text()))
+	}
+	if parser.match(TOKENTYPE_TEXT) {
+		return ast.NewValueExpression(string(currentTok.Text()))
 	}
 	if parser.match(TOKENTYPE_HEX_NUMBER) {
 		// No handle error?
@@ -115,7 +121,7 @@ func (parser *Parser) primary() ast.Expression {
 		if err != nil {
 			panic(err)
 		}
-		expr := ast.NewNumberExpression(float64(number))
+		expr := ast.NewValueExpression(float64(number))
 		return expr
 	}
 	if parser.match(TOKENTYPE_LPAR) {

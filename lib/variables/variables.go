@@ -1,14 +1,15 @@
 package variables
 
 import (
+	"arkana/lib"
 	"fmt"
 	"math"
 )
 
 var (
-	variables = map[string]float64{
-		"PI": math.Pi,
-		"E":  math.E,
+	variables = map[string]lib.Value{
+		"PI": lib.NewNumberValue(math.Pi),
+		"E":  lib.NewNumberValue(math.E),
 	}
 )
 
@@ -17,7 +18,7 @@ func IsExists(key string) bool {
 	return ok
 }
 
-func Get(key string) float64 {
+func Get(key string) lib.Value {
 	if !IsExists(key) {
 		panic(fmt.Sprintf("Const '%s' doesnt exists", key))
 	}
@@ -25,6 +26,6 @@ func Get(key string) float64 {
 	return variables[key]
 }
 
-func Set(key string, value float64) {
+func Set(key string, value lib.Value) {
 	variables[key] = value
 }

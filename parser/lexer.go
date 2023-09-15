@@ -47,6 +47,8 @@ func (lexer *Lexer) Tokenize() []*Token {
 		} else if current == rune('#') {
 			lexer.next()
 			lexer.tokenizeHexNumber()
+		} else if current == rune('"') {
+			lexer.tokenizeText()
 		} else if strings.ContainsRune(OPERATOR_CHARS, current) {
 			lexer.tokenizeOperator()
 		} else {
@@ -89,7 +91,47 @@ func (lexer *Lexer) tokenizeWord() {
 		buf.WriteRune(current)
 		current = lexer.next()
 	}
-	lexer.addToken(TOKENTYPE_WORD, []rune(buf.String()))
+	if buf.String() == "print" {
+		lexer.addToken(TOKENTYPE_PRINT, nil)
+	} else {
+		lexer.addToken(TOKENTYPE_WORD, []rune(buf.String()))
+	}
+}
+
+func (lexer *Lexer) tokenizeText() {
+	lexer.next() // skip "
+	var buf strings.Builder
+	current := lexer.peek(0)
+	for {
+		if current == rune('\\') {
+			current = lexer.next()
+			switch current {
+			case rune('"'):
+				current = lexer.next()
+				buf.WriteRune(rune('"'))
+				continue
+			case rune('n'):
+				current = lexer.next()
+				buf.WriteRune(rune('\n'))
+				continue
+			case rune('t'):
+				current = lexer.next()
+				buf.WriteRune(rune('\t'))
+				continue
+			}
+			buf.WriteRune(rune('\\'))
+			continue
+		}
+		if current == rune('"') {
+			break
+		}
+
+		buf.WriteRune(current)
+		current = lexer.next()
+	}
+	lexer.next() // skip closing "
+	lexer.addToken(TOKENTYPE_TEXT, []rune(buf.String()))
+
 }
 
 func (lexer *Lexer) tokenizeHexNumber() {
