@@ -86,6 +86,7 @@ func (parser *Parser) logicalAnd() ast.Expression {
 	for {
 		if parser.match(TOKENTYPE_AMPAMP) {
 			result = ast.NewConditionalExpression(ast.OPERATOR_AND, result, parser.equality())
+			continue
 		}
 		break
 	}
