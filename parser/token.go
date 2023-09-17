@@ -1,7 +1,5 @@
 package parser
 
-import "fmt"
-
 type TokenType int
 
 const (
@@ -10,53 +8,34 @@ const (
 	TOKENTYPE_WORD
 	TOKENTYPE_TEXT
 
-	// kw
+	// keyword
 	TOKENTYPE_PRINT
+	TOKENTYPE_IF
+	TOKENTYPE_ELSE
 
 	TOKENTYPE_PLUS
 	TOKENTYPE_MINUS
 	TOKENTYPE_STAR
 	TOKENTYPE_SLASH
 	TOKENTYPE_EQ
+	TOKENTYPE_EQEQ
+	TOKENTYPE_EXCL
+	TOKENTYPE_EXCLEQ
+	TOKENTYPE_LT
+	TOKENTYPE_LTEQ
+	TOKENTYPE_GT
+	TOKENTYPE_GTEQ
+
+	TOKENTYPE_BAR
+	TOKENTYPE_BARBAR
+	TOKENTYPE_AMP
+	TOKENTYPE_AMPAMP
 
 	TOKENTYPE_LPAR // (
 	TOKENTYPE_RPAR // )
 
 	TOKENTYPE_EOF
 )
-
-func (tokenType TokenType) String() string {
-	switch tokenType {
-	case TOKENTYPE_NUMBER:
-		return "NUMBER"
-	case TOKENTYPE_HEX_NUMBER:
-		return "HEX_NUMBER"
-	case TOKENTYPE_WORD:
-		return "WORD"
-	case TOKENTYPE_TEXT:
-		return "TEXT"
-	case TOKENTYPE_PRINT:
-		return "PRINT"
-	case TOKENTYPE_PLUS:
-		return "PLUS"
-	case TOKENTYPE_MINUS:
-		return "MINUS"
-	case TOKENTYPE_STAR:
-		return "STAR"
-	case TOKENTYPE_SLASH:
-		return "SLASH"
-	case TOKENTYPE_EQ:
-		return "EQ"
-	case TOKENTYPE_LPAR:
-		return "LPAREN"
-	case TOKENTYPE_RPAR:
-		return "RPAREN"
-	case TOKENTYPE_EOF:
-		return "EOF"
-	default:
-		return fmt.Sprintf("%d", tokenType)
-	}
-}
 
 type Token struct {
 	tokenType TokenType

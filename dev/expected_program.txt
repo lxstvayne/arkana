@@ -1,0 +1,64 @@
+# Variables
+
+let x = 5
+
+# if-conditions
+
+if x >= 5 {
+    ...
+} elif x == 8 {
+    ...
+} else {
+    ...
+}
+
+# Cycles
+
+for val in 1..5 {
+    ...
+}
+
+let arr = [1, 2, 3, 4, 5]
+
+for val in arr {
+    ...
+}
+
+for idx in index(arr) {
+    ...
+}
+
+for idx, val in enumerate(arr) {
+    ...
+}
+
+for _, val in enumerate(err) {
+    ...
+}
+
+## OR save standart go cycles:
+
+for idx, val in arr {
+
+}
+
+# Functions
+
+func or def keyword
+
+func test() {
+
+}
+
+def test() {
+
+}
+
+## func define args
+
+func test(arg1, arg2) { ... }
+
+### call funcs
+
+test(1, 2)
+test(arg1=1, arg2=2)

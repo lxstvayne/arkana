@@ -34,6 +34,9 @@ func (parser *Parser) statement() ast.Statement {
 	if parser.match(TOKENTYPE_PRINT) {
 		return ast.NewPrintStatement(parser.expression())
 	}
+	if parser.match(TOKENTYPE_IF) {
+		return parser.ifElseStatement()
+	}
 	return parser.assignmentStatement()
 }
 
@@ -49,8 +52,84 @@ func (parser *Parser) assignmentStatement() ast.Statement {
 	panic("Unknown statement")
 }
 
+func (parser *Parser) ifElseStatement() ast.Statement {
+	condition := parser.expression()
+	ifStmt := parser.statement()
+	var elseStmt ast.Statement
+
+	if parser.match(TOKENTYPE_ELSE) {
+		elseStmt = parser.statement() // ?
+	}
+
+	return ast.NewIfStatement(condition, ifStmt, elseStmt)
+}
+
 func (parser *Parser) expression() ast.Expression {
-	return parser.additive()
+	return parser.logicalOr()
+}
+
+func (parser *Parser) logicalOr() ast.Expression {
+	result := parser.logicalAnd()
+	for {
+		if parser.match(TOKENTYPE_BARBAR) {
+			result = ast.NewConditionalExpression(ast.OPERATOR_OR, result, parser.logicalAnd())
+			continue
+		}
+		break
+	}
+
+	return result
+}
+func (parser *Parser) logicalAnd() ast.Expression {
+	result := parser.equality()
+
+	for {
+		if parser.match(TOKENTYPE_AMPAMP) {
+			result = ast.NewConditionalExpression(ast.OPERATOR_AND, result, parser.equality())
+		}
+		break
+	}
+
+	return result
+}
+
+func (parser *Parser) equality() ast.Expression {
+	result := parser.conditional()
+
+	if parser.match(TOKENTYPE_EQEQ) {
+		return ast.NewConditionalExpression(ast.OPERATOR_EQUALS, result, parser.conditional())
+	}
+	if parser.match(TOKENTYPE_EXCLEQ) {
+		return ast.NewConditionalExpression(ast.OPERATOR_NOT_EQUALS, result, parser.conditional())
+	}
+
+	return result
+}
+
+func (parser *Parser) conditional() ast.Expression {
+	result := parser.additive()
+
+	for {
+		if parser.match(TOKENTYPE_LT) {
+			result = ast.NewConditionalExpression(ast.OPERATOR_LT, result, parser.additive())
+			continue
+		}
+		if parser.match(TOKENTYPE_LTEQ) {
+			result = ast.NewConditionalExpression(ast.OPERATOR_LTEQ, result, parser.additive())
+			continue
+		}
+		if parser.match(TOKENTYPE_GT) {
+			result = ast.NewConditionalExpression(ast.OPERATOR_GT, result, parser.additive())
+			continue
+		}
+		if parser.match(TOKENTYPE_GTEQ) {
+			result = ast.NewConditionalExpression(ast.OPERATOR_GTEQ, result, parser.additive())
+			continue
+		}
+		break
+	}
+
+	return result
 }
 
 func (parser *Parser) additive() ast.Expression {

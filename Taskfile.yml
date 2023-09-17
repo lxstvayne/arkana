@@ -1,0 +1,11 @@
+# https://taskfile.dev
+
+version: '3'
+
+tasks:
+  run-dev:
+    go run ./dev/main.go
+  
+  autogenerate:
+    - stringer --type TokenType --trimprefix TOKENTYPE_ ./parser
+    - stringer --type Operator --trimprefix OPERATOR_ ./parser/ast
