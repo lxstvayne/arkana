@@ -7,5 +7,9 @@ tasks:
     go run ./dev/main.go
   
   autogenerate:
-    - stringer --type TokenType --trimprefix TOKENTYPE_ ./parser
-    - stringer --type Operator --trimprefix OPERATOR_ ./parser/ast
+    - task: autogenerate-stringer
+  
+  autogenerate-stringer:
+    cmds:
+      - stringer --type TokenType --trimprefix TOKENTYPE_ ./parser
+      - stringer --type Operator --trimprefix OPERATOR_ ./parser/ast
