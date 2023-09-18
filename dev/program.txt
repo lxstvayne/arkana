@@ -7,6 +7,18 @@ print "word2 = " + word2 + "\n"
 print "1" > "abc"
 print "\n"
 if (1 <= 2) print "1 <= 2"
-else print "1 != 1"
-if (40 < 50 && 50 > 60) print "true"
+else print "1 != 1\n"
+if (40 < 50 || 50 > 60) {
+    print "true1\n"
+    print "true2\n"
+    i = 0
+    while (i < 10) {
+        print "i = " + i + "\n"
+        if i == 4 continue
+        i = i + 1
+    }
+    for i = 0, i < 10, i = i + 1 {
+        print "i = " + i + "\n"
+    }
+}
 else print "false"

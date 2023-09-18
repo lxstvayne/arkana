@@ -20,13 +20,38 @@ func NewParser(tokens []*Token) *Parser {
 }
 
 // Метод рекурсивного спуска
-func (parser *Parser) Parse() (result []ast.Statement) {
+func (parser *Parser) Parse() ast.Statement {
+	result := ast.NewBlockStatement(nil)
+
 	for {
 		if parser.match(TOKENTYPE_EOF) {
-			return
+			break
 		}
 
-		result = append(result, parser.statement())
+		result.Add(parser.statement())
+	}
+
+	return result
+}
+
+func (parser *Parser) block() ast.Statement {
+	block := ast.NewBlockStatement(nil)
+	parser.consume(TOKENTYPE_LBRACE)
+	for {
+		if parser.match(TOKENTYPE_RBRACE) {
+			break
+		}
+
+		block.Add(parser.statement())
+	}
+	return block
+}
+
+func (parser *Parser) statementOrBlock() ast.Statement {
+	if parser.get(0).TokenType() == TOKENTYPE_LBRACE {
+		return parser.block()
+	} else {
+		return parser.statement()
 	}
 }
 
@@ -36,6 +61,18 @@ func (parser *Parser) statement() ast.Statement {
 	}
 	if parser.match(TOKENTYPE_IF) {
 		return parser.ifElseStatement()
+	}
+	if parser.match(TOKENTYPE_WHILE) {
+		return parser.whileStatement()
+	}
+	if parser.match(TOKENTYPE_FOR) {
+		return parser.forStatement()
+	}
+	if parser.match(TOKENTYPE_BREAK) {
+		return ast.NewBreakStatement()
+	}
+	if parser.match(TOKENTYPE_CONTINUE) {
+		return ast.NewContinueStatement()
 	}
 	return parser.assignmentStatement()
 }
@@ -54,14 +91,30 @@ func (parser *Parser) assignmentStatement() ast.Statement {
 
 func (parser *Parser) ifElseStatement() ast.Statement {
 	condition := parser.expression()
-	ifStmt := parser.statement()
+	ifStmt := parser.statementOrBlock()
 	var elseStmt ast.Statement
 
 	if parser.match(TOKENTYPE_ELSE) {
-		elseStmt = parser.statement() // ?
+		elseStmt = parser.statementOrBlock()
 	}
 
 	return ast.NewIfStatement(condition, ifStmt, elseStmt)
+}
+
+func (parser *Parser) whileStatement() ast.Statement {
+	condition := parser.expression()
+	stmt := parser.statementOrBlock()
+	return ast.NewWhileStatement(condition, stmt)
+}
+
+func (parser *Parser) forStatement() ast.Statement {
+	initialization := parser.assignmentStatement()
+	parser.consume(TOKENTYPE_COMMA)
+	termination := parser.expression()
+	parser.consume(TOKENTYPE_COMMA)
+	increment := parser.assignmentStatement()
+	stmt := parser.statementOrBlock()
+	return ast.NewForStatement(initialization, termination, increment, stmt)
 }
 
 func (parser *Parser) expression() ast.Expression {

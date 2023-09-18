@@ -6,7 +6,7 @@ import (
 )
 
 const (
-	OPERATOR_CHARS = "+-*/()=<>!&|"
+	OPERATOR_CHARS = "+-*/(){}=<>!&|,"
 )
 
 var (
@@ -17,9 +17,12 @@ var (
 		"/": TOKENTYPE_SLASH,
 		"(": TOKENTYPE_LPAR,
 		")": TOKENTYPE_RPAR,
+		"{": TOKENTYPE_LBRACE,
+		"}": TOKENTYPE_RBRACE,
 		"=": TOKENTYPE_EQ,
 		"<": TOKENTYPE_LT,
 		">": TOKENTYPE_GT,
+		",": TOKENTYPE_COMMA,
 
 		"!": TOKENTYPE_EXCL,
 		"&": TOKENTYPE_AMP,
@@ -117,6 +120,14 @@ func (lexer *Lexer) tokenizeWord() {
 		lexer.addToken(TOKENTYPE_IF, nil)
 	case "else":
 		lexer.addToken(TOKENTYPE_ELSE, nil)
+	case "while":
+		lexer.addToken(TOKENTYPE_WHILE, nil)
+	case "for":
+		lexer.addToken(TOKENTYPE_FOR, nil)
+	case "break":
+		lexer.addToken(TOKENTYPE_BREAK, nil)
+	case "continue":
+		lexer.addToken(TOKENTYPE_CONTINUE, nil)
 	default:
 		lexer.addToken(TOKENTYPE_WORD, []rune(buf.String()))
 	}

@@ -20,11 +20,7 @@ func main() {
 		fmt.Println(tok.TokenType(), string(tok.Text()))
 	}
 	parser := parser.NewParser(tokens)
-	statements := parser.Parse()
-	for _, st := range statements {
-		fmt.Println(st)
-	}
-	for _, st := range statements {
-		st.Execute()
-	}
+	program := parser.Parse()
+	fmt.Println(program.String())
+	program.Execute()
 }
