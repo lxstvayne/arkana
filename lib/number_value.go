@@ -19,6 +19,6 @@ func (value *NumberValue) Float64() float64 {
 }
 
 func (value *NumberValue) String() string {
-	s := fmt.Sprintf("%f", value.value)
+	s := fmt.Sprintf("%v", value.value)
 	return s
 }

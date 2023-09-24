@@ -74,6 +74,9 @@ func (parser *Parser) statement() ast.Statement {
 	if parser.match(TOKENTYPE_CONTINUE) {
 		return ast.NewContinueStatement()
 	}
+	if parser.get(0).TokenType() == TOKENTYPE_WORD && parser.get(1).TokenType() == TOKENTYPE_LPAR {
+		return ast.NewFunctionStatement(parser.function())
+	}
 	return parser.assignmentStatement()
 }
 
@@ -115,6 +118,22 @@ func (parser *Parser) forStatement() ast.Statement {
 	increment := parser.assignmentStatement()
 	stmt := parser.statementOrBlock()
 	return ast.NewForStatement(initialization, termination, increment, stmt)
+}
+
+func (parser *Parser) function() *ast.FunctionalExpression {
+	name := string(parser.consume(TOKENTYPE_WORD).Text())
+	parser.consume(TOKENTYPE_LPAR)
+	function := ast.NewFunctionalExpression(name, nil)
+	for {
+		if parser.match(TOKENTYPE_RPAR) {
+			break
+		}
+
+		function.AddArgument(parser.expression())
+		parser.match(TOKENTYPE_COMMA)
+	}
+
+	return function
 }
 
 func (parser *Parser) expression() ast.Expression {
@@ -241,6 +260,9 @@ func (parser *Parser) primary() ast.Expression {
 		}
 		expr := ast.NewValueExpression(number)
 		return expr
+	}
+	if parser.get(0).TokenType() == TOKENTYPE_WORD && parser.get(1).TokenType() == TOKENTYPE_LPAR {
+		return parser.function()
 	}
 	if parser.match(TOKENTYPE_WORD) {
 		return ast.NewVariableExpression(string(currentTok.Text()))

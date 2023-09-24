@@ -14,7 +14,6 @@ if (40 < 50 || 50 > 60) {
     i = 0
     while (i < 10) {
         print "i = " + i + "\n"
-        if i == 4 continue
         i = i + 1
     }
     for i = 0, i < 10, i = i + 1 {
@@ -22,3 +21,4 @@ if (40 < 50 || 50 > 60) {
     }
 }
 else print "false"
+print "sin(PI) = " + sin(PI)
