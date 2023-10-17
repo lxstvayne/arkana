@@ -1,4 +1,4 @@
-package ast
+package expressions
 
 import (
 	"arkana/lib"
@@ -7,10 +7,10 @@ import (
 
 type UnaryExpression struct {
 	operation rune
-	expr      Expression
+	expr      lib.Expression
 }
 
-func NewUnaryExpression(operation rune, expr Expression) *UnaryExpression {
+func NewUnaryExpression(operation rune, expr lib.Expression) *UnaryExpression {
 	return &UnaryExpression{
 		operation: operation,
 		expr:      expr,

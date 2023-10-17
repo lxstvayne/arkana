@@ -1,15 +1,16 @@
-package ast
+package statements
 
 import (
+	"arkana/lib"
 	"fmt"
 )
 
 type WhileStatement struct {
-	condition Expression
-	statement Statement
+	condition lib.Expression
+	statement lib.Statement
 }
 
-func NewWhileStatement(condition Expression, statement Statement) *WhileStatement {
+func NewWhileStatement(condition lib.Expression, statement lib.Statement) *WhileStatement {
 	return &WhileStatement{
 		condition: condition,
 		statement: statement,

@@ -1,4 +1,4 @@
-package parser
+package parse
 
 import (
 	"strings"
@@ -114,8 +114,6 @@ func (lexer *Lexer) tokenizeWord() {
 		current, _ = lexer.next()
 	}
 	switch buf.String() {
-	case "print":
-		lexer.addToken(TOKENTYPE_PRINT, nil)
 	case "if":
 		lexer.addToken(TOKENTYPE_IF, nil)
 	case "else":
@@ -128,6 +126,8 @@ func (lexer *Lexer) tokenizeWord() {
 		lexer.addToken(TOKENTYPE_BREAK, nil)
 	case "continue":
 		lexer.addToken(TOKENTYPE_CONTINUE, nil)
+	case "func":
+		lexer.addToken(TOKENTYPE_FUNC, nil)
 	default:
 		lexer.addToken(TOKENTYPE_WORD, []rune(buf.String()))
 	}

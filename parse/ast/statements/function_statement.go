@@ -1,10 +1,12 @@
-package ast
+package statements
+
+import "arkana/parse/ast/expressions"
 
 type FunctionStatement struct {
-	function *FunctionalExpression
+	function *expressions.FunctionalExpression
 }
 
-func NewFunctionStatement(function *FunctionalExpression) *FunctionStatement {
+func NewFunctionStatement(function *expressions.FunctionalExpression) *FunctionStatement {
 	return &FunctionStatement{function: function}
 }
 

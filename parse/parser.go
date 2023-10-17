@@ -1,7 +1,9 @@
-package parser
+package parse
 
 import (
-	"arkana/parser/ast"
+	"arkana/lib"
+	"arkana/parse/ast/expressions"
+	"arkana/parse/ast/statements"
 	"fmt"
 	"strconv"
 )
@@ -20,8 +22,8 @@ func NewParser(tokens []*Token) *Parser {
 }
 
 // Метод рекурсивного спуска
-func (parser *Parser) Parse() ast.Statement {
-	result := ast.NewBlockStatement(nil)
+func (parser *Parser) Parse() lib.Statement {
+	result := statements.NewBlockStatement(nil)
 
 	for {
 		if parser.match(TOKENTYPE_EOF) {
@@ -34,8 +36,8 @@ func (parser *Parser) Parse() ast.Statement {
 	return result
 }
 
-func (parser *Parser) block() ast.Statement {
-	block := ast.NewBlockStatement(nil)
+func (parser *Parser) block() lib.Statement {
+	block := statements.NewBlockStatement(nil)
 	parser.consume(TOKENTYPE_LBRACE)
 	for {
 		if parser.match(TOKENTYPE_RBRACE) {
@@ -47,7 +49,7 @@ func (parser *Parser) block() ast.Statement {
 	return block
 }
 
-func (parser *Parser) statementOrBlock() ast.Statement {
+func (parser *Parser) statementOrBlock() lib.Statement {
 	if parser.get(0).TokenType() == TOKENTYPE_LBRACE {
 		return parser.block()
 	} else {
@@ -55,10 +57,7 @@ func (parser *Parser) statementOrBlock() ast.Statement {
 	}
 }
 
-func (parser *Parser) statement() ast.Statement {
-	if parser.match(TOKENTYPE_PRINT) {
-		return ast.NewPrintStatement(parser.expression())
-	}
+func (parser *Parser) statement() lib.Statement {
 	if parser.match(TOKENTYPE_IF) {
 		return parser.ifElseStatement()
 	}
@@ -69,61 +68,82 @@ func (parser *Parser) statement() ast.Statement {
 		return parser.forStatement()
 	}
 	if parser.match(TOKENTYPE_BREAK) {
-		return ast.NewBreakStatement()
+		return statements.NewBreakStatement()
 	}
 	if parser.match(TOKENTYPE_CONTINUE) {
-		return ast.NewContinueStatement()
+		return statements.NewContinueStatement()
+	}
+	if parser.match(TOKENTYPE_FUNC) {
+		return parser.functionDefine()
 	}
 	if parser.get(0).TokenType() == TOKENTYPE_WORD && parser.get(1).TokenType() == TOKENTYPE_LPAR {
-		return ast.NewFunctionStatement(parser.function())
+		return statements.NewFunctionStatement(parser.function())
 	}
 	return parser.assignmentStatement()
 }
 
-func (parser *Parser) assignmentStatement() ast.Statement {
+func (parser *Parser) assignmentStatement() lib.Statement {
 	// WORD EQ
 	current := parser.get(0)
 	if parser.match(TOKENTYPE_WORD) && parser.get(0).TokenType() == TOKENTYPE_EQ {
 		variable := current.Text()
 		parser.consume(TOKENTYPE_EQ)
-		return ast.NewAssignmentStatement(variable, parser.expression())
+		return statements.NewAssignmentStatement(variable, parser.expression())
 	}
 
 	panic("Unknown statement")
 }
 
-func (parser *Parser) ifElseStatement() ast.Statement {
+func (parser *Parser) ifElseStatement() lib.Statement {
 	condition := parser.expression()
 	ifStmt := parser.statementOrBlock()
-	var elseStmt ast.Statement
+	var elseStmt lib.Statement
 
 	if parser.match(TOKENTYPE_ELSE) {
 		elseStmt = parser.statementOrBlock()
 	}
 
-	return ast.NewIfStatement(condition, ifStmt, elseStmt)
+	return statements.NewIfStatement(condition, ifStmt, elseStmt)
 }
 
-func (parser *Parser) whileStatement() ast.Statement {
+func (parser *Parser) whileStatement() lib.Statement {
 	condition := parser.expression()
 	stmt := parser.statementOrBlock()
-	return ast.NewWhileStatement(condition, stmt)
+	return statements.NewWhileStatement(condition, stmt)
 }
 
-func (parser *Parser) forStatement() ast.Statement {
+func (parser *Parser) forStatement() lib.Statement {
 	initialization := parser.assignmentStatement()
 	parser.consume(TOKENTYPE_COMMA)
 	termination := parser.expression()
 	parser.consume(TOKENTYPE_COMMA)
 	increment := parser.assignmentStatement()
 	stmt := parser.statementOrBlock()
-	return ast.NewForStatement(initialization, termination, increment, stmt)
+	return statements.NewForStatement(initialization, termination, increment, stmt)
 }
 
-func (parser *Parser) function() *ast.FunctionalExpression {
+func (parser *Parser) functionDefine() *statements.FunctionDefineStatement {
 	name := string(parser.consume(TOKENTYPE_WORD).Text())
 	parser.consume(TOKENTYPE_LPAR)
-	function := ast.NewFunctionalExpression(name, nil)
+	argNames := []string{}
+	for {
+		if parser.match(TOKENTYPE_RPAR) {
+			break
+		}
+
+		argNames = append(argNames, string(parser.consume(TOKENTYPE_WORD).Text()))
+		parser.match(TOKENTYPE_COMMA)
+	}
+
+	body := parser.statementOrBlock()
+
+	return statements.NewFunctionDefineStatement(name, argNames, body)
+}
+
+func (parser *Parser) function() *expressions.FunctionalExpression {
+	name := string(parser.consume(TOKENTYPE_WORD).Text())
+	parser.consume(TOKENTYPE_LPAR)
+	function := expressions.NewFunctionalExpression(name, nil)
 	for {
 		if parser.match(TOKENTYPE_RPAR) {
 			break
@@ -136,15 +156,15 @@ func (parser *Parser) function() *ast.FunctionalExpression {
 	return function
 }
 
-func (parser *Parser) expression() ast.Expression {
+func (parser *Parser) expression() lib.Expression {
 	return parser.logicalOr()
 }
 
-func (parser *Parser) logicalOr() ast.Expression {
+func (parser *Parser) logicalOr() lib.Expression {
 	result := parser.logicalAnd()
 	for {
 		if parser.match(TOKENTYPE_BARBAR) {
-			result = ast.NewConditionalExpression(ast.OPERATOR_OR, result, parser.logicalAnd())
+			result = expressions.NewConditionalExpression(expressions.OPERATOR_OR, result, parser.logicalAnd())
 			continue
 		}
 		break
@@ -152,12 +172,12 @@ func (parser *Parser) logicalOr() ast.Expression {
 
 	return result
 }
-func (parser *Parser) logicalAnd() ast.Expression {
+func (parser *Parser) logicalAnd() lib.Expression {
 	result := parser.equality()
 
 	for {
 		if parser.match(TOKENTYPE_AMPAMP) {
-			result = ast.NewConditionalExpression(ast.OPERATOR_AND, result, parser.equality())
+			result = expressions.NewConditionalExpression(expressions.OPERATOR_AND, result, parser.equality())
 			continue
 		}
 		break
@@ -166,37 +186,37 @@ func (parser *Parser) logicalAnd() ast.Expression {
 	return result
 }
 
-func (parser *Parser) equality() ast.Expression {
+func (parser *Parser) equality() lib.Expression {
 	result := parser.conditional()
 
 	if parser.match(TOKENTYPE_EQEQ) {
-		return ast.NewConditionalExpression(ast.OPERATOR_EQUALS, result, parser.conditional())
+		return expressions.NewConditionalExpression(expressions.OPERATOR_EQUALS, result, parser.conditional())
 	}
 	if parser.match(TOKENTYPE_EXCLEQ) {
-		return ast.NewConditionalExpression(ast.OPERATOR_NOT_EQUALS, result, parser.conditional())
+		return expressions.NewConditionalExpression(expressions.OPERATOR_NOT_EQUALS, result, parser.conditional())
 	}
 
 	return result
 }
 
-func (parser *Parser) conditional() ast.Expression {
+func (parser *Parser) conditional() lib.Expression {
 	result := parser.additive()
 
 	for {
 		if parser.match(TOKENTYPE_LT) {
-			result = ast.NewConditionalExpression(ast.OPERATOR_LT, result, parser.additive())
+			result = expressions.NewConditionalExpression(expressions.OPERATOR_LT, result, parser.additive())
 			continue
 		}
 		if parser.match(TOKENTYPE_LTEQ) {
-			result = ast.NewConditionalExpression(ast.OPERATOR_LTEQ, result, parser.additive())
+			result = expressions.NewConditionalExpression(expressions.OPERATOR_LTEQ, result, parser.additive())
 			continue
 		}
 		if parser.match(TOKENTYPE_GT) {
-			result = ast.NewConditionalExpression(ast.OPERATOR_GT, result, parser.additive())
+			result = expressions.NewConditionalExpression(expressions.OPERATOR_GT, result, parser.additive())
 			continue
 		}
 		if parser.match(TOKENTYPE_GTEQ) {
-			result = ast.NewConditionalExpression(ast.OPERATOR_GTEQ, result, parser.additive())
+			result = expressions.NewConditionalExpression(expressions.OPERATOR_GTEQ, result, parser.additive())
 			continue
 		}
 		break
@@ -205,16 +225,16 @@ func (parser *Parser) conditional() ast.Expression {
 	return result
 }
 
-func (parser *Parser) additive() ast.Expression {
+func (parser *Parser) additive() lib.Expression {
 	result := parser.multiplicative()
 
 	for {
 		if parser.match(TOKENTYPE_PLUS) {
-			result = ast.NewBinaryExpression(rune('+'), result, parser.multiplicative())
+			result = expressions.NewBinaryExpression(rune('+'), result, parser.multiplicative())
 			continue
 		}
 		if parser.match(TOKENTYPE_MINUS) {
-			result = ast.NewBinaryExpression(rune('-'), result, parser.multiplicative())
+			result = expressions.NewBinaryExpression(rune('-'), result, parser.multiplicative())
 			continue
 		}
 		break
@@ -223,16 +243,16 @@ func (parser *Parser) additive() ast.Expression {
 	return result
 }
 
-func (parser *Parser) multiplicative() ast.Expression {
+func (parser *Parser) multiplicative() lib.Expression {
 	result := parser.unary()
 
 	for {
 		if parser.match(TOKENTYPE_STAR) {
-			result = ast.NewBinaryExpression(rune('*'), result, parser.unary())
+			result = expressions.NewBinaryExpression(rune('*'), result, parser.unary())
 			continue
 		}
 		if parser.match(TOKENTYPE_SLASH) {
-			result = ast.NewBinaryExpression(rune('/'), result, parser.unary())
+			result = expressions.NewBinaryExpression(rune('/'), result, parser.unary())
 			continue
 		}
 		break
@@ -241,16 +261,16 @@ func (parser *Parser) multiplicative() ast.Expression {
 	return result
 }
 
-func (parser *Parser) unary() ast.Expression {
+func (parser *Parser) unary() lib.Expression {
 	if parser.match(TOKENTYPE_MINUS) {
-		return ast.NewUnaryExpression(rune('-'), parser.primary())
+		return expressions.NewUnaryExpression(rune('-'), parser.primary())
 	} else if parser.match(TOKENTYPE_PLUS) {
 		return parser.primary()
 	}
 	return parser.primary()
 }
 
-func (parser *Parser) primary() ast.Expression {
+func (parser *Parser) primary() lib.Expression {
 	currentTok := parser.get(0)
 	if parser.match(TOKENTYPE_NUMBER) {
 		// No handle error?
@@ -258,17 +278,17 @@ func (parser *Parser) primary() ast.Expression {
 		if err != nil {
 			panic(err)
 		}
-		expr := ast.NewValueExpression(number)
+		expr := expressions.NewValueExpression(number)
 		return expr
 	}
 	if parser.get(0).TokenType() == TOKENTYPE_WORD && parser.get(1).TokenType() == TOKENTYPE_LPAR {
 		return parser.function()
 	}
 	if parser.match(TOKENTYPE_WORD) {
-		return ast.NewVariableExpression(string(currentTok.Text()))
+		return expressions.NewVariableExpression(string(currentTok.Text()))
 	}
 	if parser.match(TOKENTYPE_TEXT) {
-		return ast.NewValueExpression(string(currentTok.Text()))
+		return expressions.NewValueExpression(string(currentTok.Text()))
 	}
 	if parser.match(TOKENTYPE_HEX_NUMBER) {
 		// No handle error?
@@ -276,7 +296,7 @@ func (parser *Parser) primary() ast.Expression {
 		if err != nil {
 			panic(err)
 		}
-		expr := ast.NewValueExpression(float64(number))
+		expr := expressions.NewValueExpression(float64(number))
 		return expr
 	}
 	if parser.match(TOKENTYPE_LPAR) {

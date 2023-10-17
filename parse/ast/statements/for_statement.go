@@ -1,17 +1,18 @@
-package ast
+package statements
 
 import (
+	"arkana/lib"
 	"fmt"
 )
 
 type ForStatement struct {
-	initialization Statement
-	termination    Expression
-	increment      Statement
-	block          Statement
+	initialization lib.Statement
+	termination    lib.Expression
+	increment      lib.Statement
+	block          lib.Statement
 }
 
-func NewForStatement(initialization Statement, termination Expression, increment Statement, block Statement) *ForStatement {
+func NewForStatement(initialization lib.Statement, termination lib.Expression, increment lib.Statement, block lib.Statement) *ForStatement {
 	return &ForStatement{
 		initialization: initialization,
 		termination:    termination,

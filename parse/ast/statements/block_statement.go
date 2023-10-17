@@ -1,20 +1,21 @@
-package ast
+package statements
 
 import (
+	"arkana/lib"
 	"strings"
 )
 
 type BlockStatement struct {
-	statements []Statement
+	statements []lib.Statement
 }
 
-func NewBlockStatement(statements []Statement) *BlockStatement {
+func NewBlockStatement(statements []lib.Statement) *BlockStatement {
 	return &BlockStatement{
 		statements: statements,
 	}
 }
 
-func (st *BlockStatement) Add(stmt Statement) {
+func (st *BlockStatement) Add(stmt lib.Statement) {
 	st.statements = append(st.statements, stmt)
 }
 

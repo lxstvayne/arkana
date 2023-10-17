@@ -1,14 +1,15 @@
-package ast
+package statements
 
 import (
+	"arkana/lib"
 	"fmt"
 )
 
 type PrintStatement struct {
-	expr Expression
+	expr lib.Expression
 }
 
-func NewPrintStatement(expr Expression) *PrintStatement {
+func NewPrintStatement(expr lib.Expression) *PrintStatement {
 	return &PrintStatement{
 		expr: expr,
 	}

@@ -1,4 +1,4 @@
-package ast
+package expressions
 
 import (
 	"arkana/lib"
@@ -8,11 +8,11 @@ import (
 
 type BinaryExpression struct {
 	operation rune
-	expr1     Expression
-	expr2     Expression
+	expr1     lib.Expression
+	expr2     lib.Expression
 }
 
-func NewBinaryExpression(operation rune, expr1 Expression, expr2 Expression) *BinaryExpression {
+func NewBinaryExpression(operation rune, expr1 lib.Expression, expr2 lib.Expression) *BinaryExpression {
 	return &BinaryExpression{
 		operation: operation,
 		expr1:     expr1,

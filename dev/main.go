@@ -1,7 +1,7 @@
 package main
 
 import (
-	"arkana/parser"
+	"arkana/parse"
 	"fmt"
 	"os"
 )
@@ -14,12 +14,12 @@ func main() {
 	}
 
 	exampleString := string(data)
-	lexer := parser.NewLexer(exampleString)
+	lexer := parse.NewLexer(exampleString)
 	tokens := lexer.Tokenize()
 	for _, tok := range tokens {
 		fmt.Println(tok.TokenType(), string(tok.Text()))
 	}
-	parser := parser.NewParser(tokens)
+	parser := parse.NewParser(tokens)
 	program := parser.Parse()
 	fmt.Println(program.String())
 	program.Execute()

@@ -16,9 +16,18 @@ func (sf *SinFunction) Execute(args ...lib.Value) lib.Value {
 	return lib.NewNumberValue(math.Sin(args[0].Float64()))
 }
 
+type PrintFunction struct{}
+
+func (pf *PrintFunction) Execute(args ...lib.Value) lib.Value {
+	fmt.Print(args, "\n")
+
+	return lib.NewStringValue("None")
+}
+
 var (
 	functions = map[string]lib.Function{
-		"sin": &SinFunction{},
+		"sin":   &SinFunction{},
+		"print": &PrintFunction{},
 	}
 )
 

@@ -1,4 +1,4 @@
-package ast
+package expressions
 
 import (
 	"arkana/lib"
@@ -7,33 +7,13 @@ import (
 	"strings"
 )
 
-type Operator int
-
-const (
-	OPERATOR_PLUS Operator = iota
-	OPERATOR_MINUS
-	OPERATOR_MULTIPLY
-	OPERATOR_DIVIDE
-
-	OPERATOR_EQUALS
-	OPERATOR_NOT_EQUALS
-
-	OPERATOR_LT
-	OPERATOR_LTEQ
-	OPERATOR_GT
-	OPERATOR_GTEQ
-
-	OPERATOR_AND
-	OPERATOR_OR
-)
-
 type ConditionalExpression struct {
 	operation Operator
-	expr1     Expression
-	expr2     Expression
+	expr1     lib.Expression
+	expr2     lib.Expression
 }
 
-func NewConditionalExpression(operation Operator, expr1 Expression, expr2 Expression) *ConditionalExpression {
+func NewConditionalExpression(operation Operator, expr1 lib.Expression, expr2 lib.Expression) *ConditionalExpression {
 	return &ConditionalExpression{
 		operation: operation,
 		expr1:     expr1,

@@ -1,11 +1,10 @@
-package ast
+package lib
 
 import (
-	"arkana/lib"
 	"fmt"
 )
 
 type Expression interface {
-	Eval() lib.Value
+	Eval() Value
 	fmt.Stringer
 }

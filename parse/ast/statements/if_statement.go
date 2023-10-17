@@ -1,16 +1,17 @@
-package ast
+package statements
 
 import (
+	"arkana/lib"
 	"fmt"
 )
 
 type IfStatement struct {
-	condition Expression
-	ifStmt    Statement
-	elseStmt  Statement
+	condition lib.Expression
+	ifStmt    lib.Statement
+	elseStmt  lib.Statement
 }
 
-func NewIfStatement(expr Expression, ifStmt Statement, elseStmt Statement) *IfStatement {
+func NewIfStatement(expr lib.Expression, ifStmt lib.Statement, elseStmt lib.Statement) *IfStatement {
 	return &IfStatement{
 		condition: expr,
 		ifStmt:    ifStmt,

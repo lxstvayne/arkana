@@ -1,4 +1,4 @@
-package ast
+package expressions
 
 import (
 	"arkana/lib"

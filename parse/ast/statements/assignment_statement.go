@@ -1,16 +1,17 @@
-package ast
+package statements
 
 import (
+	"arkana/lib"
 	"arkana/lib/variables"
 	"fmt"
 )
 
 type AssignmentStatement struct {
 	variable []rune
-	expr     Expression
+	expr     lib.Expression
 }
 
-func NewAssignmentStatement(variable []rune, expr Expression) *AssignmentStatement {
+func NewAssignmentStatement(variable []rune, expr lib.Expression) *AssignmentStatement {
 	return &AssignmentStatement{
 		variable: variable,
 		expr:     expr,
