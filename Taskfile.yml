@@ -11,5 +11,5 @@ tasks:
   
   autogenerate-stringer:
     cmds:
-      - stringer --type TokenType --trimprefix TOKENTYPE_ ./parser
-      - stringer --type Operator --trimprefix OPERATOR_ ./parser/ast
+      - stringer --type TokenType --trimprefix TOKENTYPE_ ./parse
+      - stringer --type Operator --trimprefix OPERATOR_ ./parse/ast/expressions

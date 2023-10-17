@@ -128,6 +128,10 @@ func (lexer *Lexer) tokenizeWord() {
 		lexer.addToken(TOKENTYPE_CONTINUE, nil)
 	case "func":
 		lexer.addToken(TOKENTYPE_FUNC, nil)
+	case "return":
+		lexer.addToken(TOKENTYPE_RETURN, nil)
+	case "None":
+		lexer.addToken(TOKENTYPE_NONE, nil)
 	default:
 		lexer.addToken(TOKENTYPE_WORD, []rune(buf.String()))
 	}

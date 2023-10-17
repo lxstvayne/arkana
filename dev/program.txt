@@ -1,5 +1,5 @@
-func hello_world(x, y) {
-    print(x, y)
+func hello_world() {
+    print(None == None)
 }
 
-hello_world(1, 2)
+hello_world()

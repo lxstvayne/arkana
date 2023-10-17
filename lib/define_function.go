@@ -13,6 +13,7 @@ func NewDefineFunction(argNames []string, body Statement) *DefineFunction {
 }
 
 func (df *DefineFunction) Execute(args ...Value) Value {
+	// EXECUTE and check return statement
 	df.body.Execute()
 	return NewNumberValue(0)
 }

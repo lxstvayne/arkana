@@ -76,6 +76,9 @@ func (parser *Parser) statement() lib.Statement {
 	if parser.match(TOKENTYPE_FUNC) {
 		return parser.functionDefine()
 	}
+	if parser.match(TOKENTYPE_RETURN) {
+		return statements.NewReturnStatement(parser.expression())
+	}
 	if parser.get(0).TokenType() == TOKENTYPE_WORD && parser.get(1).TokenType() == TOKENTYPE_LPAR {
 		return statements.NewFunctionStatement(parser.function())
 	}
@@ -283,6 +286,9 @@ func (parser *Parser) primary() lib.Expression {
 	}
 	if parser.get(0).TokenType() == TOKENTYPE_WORD && parser.get(1).TokenType() == TOKENTYPE_LPAR {
 		return parser.function()
+	}
+	if parser.match(TOKENTYPE_NONE) {
+		return expressions.NONE
 	}
 	if parser.match(TOKENTYPE_WORD) {
 		return expressions.NewVariableExpression(string(currentTok.Text()))
