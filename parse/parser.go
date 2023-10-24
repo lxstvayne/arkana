@@ -93,6 +93,14 @@ func (parser *Parser) assignmentStatement() lib.Statement {
 		parser.consume(TOKENTYPE_EQ)
 		return statements.NewAssignmentStatement(variable, parser.expression())
 	}
+	if parser.match(TOKENTYPE_WORD) && parser.get(1).TokenType() == TOKENTYPE_LBRACKET {
+		variable := parser.consume(TOKENTYPE_WORD)
+		parser.consume(TOKENTYPE_LBRACKET)
+		idx := parser.expression()
+		parser.consume(TOKENTYPE_RBRACKET)
+		parser.consume(TOKENTYPE_EQ)
+		return statements.NewArrayAssignmentStatement(string(variable.Text()), idx, parser.expression())
+	}
 
 	panic("Unknown statement")
 }
@@ -157,6 +165,30 @@ func (parser *Parser) function() *expressions.FunctionalExpression {
 	}
 
 	return function
+}
+
+func (parser *Parser) array() lib.Expression {
+	elements := []lib.Expression{}
+	for {
+		if parser.match(TOKENTYPE_RBRACKET) {
+			break
+		}
+
+		elements = append(elements, parser.expression())
+
+		parser.match(TOKENTYPE_COMMA)
+	}
+
+	// parser.consume(TOKENTYPE_RBRACKET)
+	return expressions.NewArrayExpression(elements)
+}
+
+func (parser *Parser) element() lib.Expression {
+	variable := parser.consume(TOKENTYPE_WORD)
+	parser.consume(TOKENTYPE_LBRACKET)
+	idx := parser.expression()
+	parser.consume(TOKENTYPE_RBRACKET)
+	return expressions.NewArrayAccessExpression(string(variable.Text()), idx)
 }
 
 func (parser *Parser) expression() lib.Expression {
@@ -286,6 +318,12 @@ func (parser *Parser) primary() lib.Expression {
 	}
 	if parser.get(0).TokenType() == TOKENTYPE_WORD && parser.get(1).TokenType() == TOKENTYPE_LPAR {
 		return parser.function()
+	}
+	if parser.get(0).TokenType() == TOKENTYPE_WORD && parser.get(1).TokenType() == TOKENTYPE_LBRACKET {
+		return parser.element()
+	}
+	if parser.match(TOKENTYPE_LBRACKET) {
+		return parser.array()
 	}
 	if parser.match(TOKENTYPE_NONE) {
 		return expressions.NONE

@@ -1,5 +1,9 @@
-func hello_world() {
-    print(None == None)
+arr = [1, 2, 3, "123123"]
+
+func get_index(idx) {
+    return arr[idx]
 }
 
-hello_world()
+print(get_index(1))
+
+

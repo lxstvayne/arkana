@@ -6,7 +6,7 @@ import (
 )
 
 const (
-	OPERATOR_CHARS = "+-*/(){}=<>!&|,"
+	OPERATOR_CHARS = "+-*/(){}[]=<>!&|,"
 )
 
 var (
@@ -15,10 +15,14 @@ var (
 		"-": TOKENTYPE_MINUS,
 		"*": TOKENTYPE_STAR,
 		"/": TOKENTYPE_SLASH,
+
 		"(": TOKENTYPE_LPAR,
 		")": TOKENTYPE_RPAR,
 		"{": TOKENTYPE_LBRACE,
 		"}": TOKENTYPE_RBRACE,
+		"[": TOKENTYPE_LBRACKET,
+		"]": TOKENTYPE_RBRACKET,
+
 		"=": TOKENTYPE_EQ,
 		"<": TOKENTYPE_LT,
 		">": TOKENTYPE_GT,
@@ -42,14 +46,14 @@ type Lexer struct {
 	input    []rune
 	tokens   []*Token
 	position int
-	lenght   int
+	length   int
 }
 
 func NewLexer(input string) *Lexer {
 	runeInput := []rune(input)
 	lexer := &Lexer{
 		input:  runeInput,
-		lenght: len(runeInput),
+		length: len(runeInput),
 	}
 	return lexer
 }
@@ -58,7 +62,7 @@ func (lexer *Lexer) Tokenize() []*Token {
 	for {
 		current, _ := lexer.peek(0)
 
-		if lexer.position >= lexer.lenght {
+		if lexer.position >= lexer.length {
 			break
 		}
 
@@ -248,7 +252,7 @@ func (lexer *Lexer) tokenizeMultilineComment() {
 
 func (lexer *Lexer) peek(relativePos int) (rune, bool) {
 	pos := lexer.position + relativePos
-	if pos >= lexer.lenght {
+	if pos >= lexer.length {
 		return 0, true
 	}
 

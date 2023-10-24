@@ -36,22 +36,24 @@ func (expr *BinaryExpression) Eval() lib.Value {
 		default:
 			panic("Invalid operation")
 		}
-	}
-
-	number1 := value1.Float64()
-	number2 := value2.Float64()
-	switch expr.operation {
-	case rune('+'):
-		return lib.NewNumberValue(number1 + number2)
-	case rune('-'):
-		return lib.NewNumberValue(number1 - number2)
-	case rune('*'):
-		return lib.NewNumberValue(number1 * number2)
-	case rune('/'):
-		return lib.NewNumberValue(number1 / number2)
+	case *lib.NumberValue:
+		number1 := value1.Float64()
+		number2 := value2.Float64()
+		switch expr.operation {
+		case rune('+'):
+			return lib.NewNumberValue(number1 + number2)
+		case rune('-'):
+			return lib.NewNumberValue(number1 - number2)
+		case rune('*'):
+			return lib.NewNumberValue(number1 * number2)
+		case rune('/'):
+			return lib.NewNumberValue(number1 / number2)
+		default:
+			// FIXME
+			return lib.NewNumberValue(number1 + number2)
+		}
 	default:
-		// FIXME
-		return lib.NewNumberValue(number1 + number2)
+		panic("Unknown type in binary expression")
 	}
 }
 
