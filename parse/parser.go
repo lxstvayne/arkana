@@ -21,7 +21,6 @@ func NewParser(tokens []*Token) *Parser {
 	}
 }
 
-// Метод рекурсивного спуска
 func (parser *Parser) Parse() lib.Statement {
 	result := statements.NewBlockStatement(nil)
 
@@ -125,9 +124,9 @@ func (parser *Parser) whileStatement() lib.Statement {
 
 func (parser *Parser) forStatement() lib.Statement {
 	initialization := parser.assignmentStatement()
-	parser.consume(TOKENTYPE_COMMA)
+	parser.consume(TOKENTYPE_SEMICOLON)
 	termination := parser.expression()
-	parser.consume(TOKENTYPE_COMMA)
+	parser.consume(TOKENTYPE_SEMICOLON)
 	increment := parser.assignmentStatement()
 	stmt := parser.statementOrBlock()
 	return statements.NewForStatement(initialization, termination, increment, stmt)
@@ -185,10 +184,20 @@ func (parser *Parser) array() lib.Expression {
 
 func (parser *Parser) element() lib.Expression {
 	variable := parser.consume(TOKENTYPE_WORD)
-	parser.consume(TOKENTYPE_LBRACKET)
-	idx := parser.expression()
-	parser.consume(TOKENTYPE_RBRACKET)
-	return expressions.NewArrayAccessExpression(string(variable.Text()), idx)
+	indexes := []lib.Expression{}
+	for {
+		parser.consume(TOKENTYPE_LBRACKET)
+		idx := parser.expression()
+		parser.consume(TOKENTYPE_RBRACKET)
+
+		indexes = append(indexes, idx)
+
+		if !parser.match(TOKENTYPE_LBRACKET) {
+			break
+		}
+	}
+
+	return expressions.NewArrayAccessExpression(string(variable.Text()), indexes)
 }
 
 func (parser *Parser) expression() lib.Expression {
@@ -354,7 +363,7 @@ func (parser *Parser) primary() lib.Expression {
 func (parser *Parser) consume(tokenType TokenType) *Token {
 	currentTok := parser.get(0)
 	if tokenType != currentTok.TokenType() {
-		panic(fmt.Sprintf("Token %s doesnt match %s", string(currentTok.Text()), tokenType))
+		panic(fmt.Sprintf("Token %s(%s) doesnt match %s", currentTok.tokenType, string(currentTok.Text()), tokenType))
 	}
 	parser.position += 1
 	return currentTok

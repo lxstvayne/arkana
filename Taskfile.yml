@@ -6,6 +6,9 @@ tasks:
   run-dev:
     - go run ./dev/main.go
   
+  build-debug:
+    - go build -o arkana.exe
+
   autogenerate:
     - task: autogenerate-stringer
   

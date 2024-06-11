@@ -6,7 +6,7 @@ import (
 )
 
 const (
-	OPERATOR_CHARS = "+-*/(){}[]=<>!&|,"
+	OPERATOR_CHARS = "+-*/(){}[]=<>!&|,;"
 )
 
 var (
@@ -27,6 +27,7 @@ var (
 		"<": TOKENTYPE_LT,
 		">": TOKENTYPE_GT,
 		",": TOKENTYPE_COMMA,
+		";": TOKENTYPE_SEMICOLON,
 
 		"!": TOKENTYPE_EXCL,
 		"&": TOKENTYPE_AMP,

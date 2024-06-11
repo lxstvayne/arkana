@@ -8,7 +8,7 @@ import (
 
 type SinFunction struct{}
 
-func (sf *SinFunction) Execute(args ...lib.Value) lib.Value {
+func (sf *SinFunction) Execute(args []lib.Value) lib.Value {
 	if len(args) != 1 {
 		panic("One args expected")
 	}
@@ -18,8 +18,11 @@ func (sf *SinFunction) Execute(args ...lib.Value) lib.Value {
 
 type PrintFunction struct{}
 
-func (pf *PrintFunction) Execute(args ...lib.Value) lib.Value {
-	fmt.Print(args, "\n")
+func (pf *PrintFunction) Execute(args []lib.Value) lib.Value {
+	for _, arg := range args {
+		fmt.Print(arg)
+		fmt.Print("\n")
+	}
 
 	return lib.NewStringValue("None")
 }

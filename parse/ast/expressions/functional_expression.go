@@ -44,7 +44,7 @@ func (expr *FunctionalExpression) Eval() lib.Value {
 		}
 	}
 
-	return f.Execute(values...)
+	return f.Execute(values)
 }
 
 func (expr *FunctionalExpression) String() string {

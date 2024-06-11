@@ -1,9 +1,9 @@
-arr = [1, 2, 3, "123123"]
-
-func get_index(idx) {
-    return arr[idx]
+func print_sum(a, b) {
+    print(a + b)
 }
 
-print(get_index(1))
+print_sum(3, 7)
+
+
 
 

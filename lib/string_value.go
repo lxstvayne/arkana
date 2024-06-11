@@ -15,7 +15,7 @@ func NewStringValue(value string) *StringValue {
 func (value *StringValue) Float64() float64 {
 	f, err := strconv.ParseFloat(value.value, 64)
 	if err != nil {
-		return 0
+		panic("Cannot parse float")
 	}
 	return f
 }

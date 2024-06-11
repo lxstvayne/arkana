@@ -23,12 +23,33 @@ func NewForStatement(initialization lib.Statement, termination lib.Expression, i
 
 func (st *ForStatement) Execute() {
 	st.initialization.Execute()
+
 	for {
 		if st.termination.Eval().Float64() == 0 {
 			break
 		}
+		// RECOVER BREAK AND CONTINUE
+		iterAction := ""
 
-		st.block.Execute()
+		func() {
+			defer func() {
+				if r := recover(); r != nil {
+					if r == "Break Statement" {
+						iterAction = "break"
+					} else if r == "Continue Statement" {
+						iterAction = "continue"
+					}
+				}
+			}()
+			st.block.Execute()
+		}()
+
+		if iterAction == "break" {
+			break
+		} else if iterAction == "continue" {
+			// Pass
+		}
+
 		st.increment.Execute()
 	}
 }
